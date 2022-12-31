@@ -23,8 +23,4 @@
     <ProjectReference Include="..\ETicaretAPI.Infrastructure\ETicaretAPI.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>
