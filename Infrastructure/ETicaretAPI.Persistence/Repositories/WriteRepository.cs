@@ -2,11 +2,7 @@
 using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ETicaretAPI.Persistence.Repositories
 {
@@ -20,29 +16,48 @@ namespace ETicaretAPI.Persistence.Repositories
         }
         public DbSet<T> Table => _context.Set<T>();
 
-        public Task<bool> AddAsync(T entity)
+        public async Task<bool> AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            EntityEntry<T> entityEntry = await Table.AddAsync(entity);
+            return entityEntry.State == EntityState.Added;
         }
 
-        public Task<bool> AddAsync(List<T> entity)
+        public async Task<bool> AddRangeAsync(List<T> entity)
         {
-            throw new NotImplementedException();
+            await Table.AddRangeAsync(entity);
+            return true;
         }
 
-        public Task<bool> Remove(T entity)
+        public bool Remove(T entity)
         {
-            throw new NotImplementedException();
+            EntityEntry<T> entityEntry = Table.Remove(entity);
+            return entityEntry.State== EntityState.Deleted;
+
         }
 
-        public Task<bool> Remove(string id)
+        public async Task<bool> Remove(string id)
+
         {
-            throw new NotImplementedException();
+           T model= await Table.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+            return Remove(model);
+           
         }
 
-        public Task<bool> UpdateAsync(T entity)
+        public bool RemoveRange(List<T> entities)
         {
-            throw new NotImplementedException();
+           Table.RemoveRange(entities);
+            return true;
         }
+
+        public bool Update(T entity)
+        {
+            EntityEntry<T> entityEntry = Table.Update(entity);
+            return entityEntry.State == EntityState.Modified;
+
+        }
+        public async Task<int> SaveAsync()
+       => await _context.SaveChangesAsync();
+
+      
     }
 }
