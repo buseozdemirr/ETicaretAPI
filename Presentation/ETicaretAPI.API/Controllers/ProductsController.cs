@@ -9,13 +9,20 @@ namespace ETicaretAPI.API.Controllers
     public class ProductsController : ControllerBase
     {
 
-        private readonly IProductReadRepository _productReadRepository;
-        private readonly IProductWriteRepository _productWriteRepository;
+        readonly private IProductReadRepository _productReadRepository;
+        readonly private IProductWriteRepository _productWriteRepository;
 
-        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository)
+        readonly private IOrderWriteRepository _orderWriteRepository;
+        readonly private ICustomerWriteRepository _customerWriteRepository;
+
+
+
+        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IOrderWriteRepository orderWriteRepository, ICustomerWriteRepository customerWriteRepository)
         {
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
+            _orderWriteRepository = orderWriteRepository;
+            _customerWriteRepository = customerWriteRepository;
         }
         [HttpGet]
         public async Task Get()
@@ -28,9 +35,22 @@ namespace ETicaretAPI.API.Controllers
 
             //});
             //var count = await _productWriteRepository.SaveAsync();
-            Product p = await _productReadRepository.GetByIdAsync("61c522bd-cbd3-41bd-8cbf-b7ce4e60c0e0", false);
-            p.Name = "cccccc";
-            await _productWriteRepository.SaveAsync();
+
+
+
+            //Product p = await _productReadRepository.GetByIdAsync("61c522bd-cbd3-41bd-8cbf-b7ce4e60c0e0", false);
+            //p.Name = "cccccc";
+            //await _productWriteRepository.SaveAsync();
+
+
+            //await _productWriteRepository.AddAsync(new() { Name = "C product", Price = 1500, Stock = 1, CreatedDate = DateTime.UtcNow });
+            //await _productWriteRepository.SaveAsync();
+            var customerId = Guid.NewGuid();
+
+            await _customerWriteRepository.AddAsync(new() { Name = "ab" ,Id=customerId});
+
+            await _orderWriteRepository.AddAsync(new() { Description = "aa", Address = "aaaa" ,CustomerId=customerId});
+            await _orderWriteRepository.SaveAsync();
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
